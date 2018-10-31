@@ -30,7 +30,7 @@ metadata:
  name: earning-service-svc-ingress
 spec:
  rules:
- - host: earning-service-svc.apps.k8s1.na-2c.gaia.jpmchase.net
+ - host: http://earning-service-svc.localhost.com
     http:
  paths:
  - backend:
@@ -39,7 +39,7 @@ spec:
         path: /
 tls:
 - hosts:
- - earning-service-svc.apps.k8s1.na-2c.gaia.jpmchase.net
+ - http://earning-service-svc.localhost.com
 
 ------------------------------------------------------------------
 
@@ -52,4 +52,4 @@ LoadBalancer: This requires an external load balancer to be present. If you have
 Ingress: An Ingress is a collection of rules that allow inbound connections to reach the cluster services. For details click here.
 
 Lets look at the sample Ingress config given here.
-•Line 10-13 defines the kubernetes service which is being exposed via this Ingress. Here the http traffic coming on DNS earning-service-svc.apps.k8s1.na-2c.gaia.jpmchase.net will be directed to the service earning-service-svc and from there to the pod.
+•Line 10-13 defines the kubernetes service which is being exposed via this Ingress. Here the http traffic coming on DNS http://earning-service-svc.localhost.com will be directed to the service earning-service-svc and from there to the pod.
