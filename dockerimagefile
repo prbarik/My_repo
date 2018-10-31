@@ -1,0 +1,62 @@
+What is an Image in Docker?  
+
+If you want to build or run Docker containers, the first thing that needs to be done is to create a Docker image.
+
+A Docker Image is the template (application plus required binaries and libraries) needed to build a running Docker Container (the running instance of that image). That essentially means the application which you want to containerize has to be bundled into a Docker engine understandable layout, along with the required dependencies, including the Operating System, runtime engine that will run the application (eg: java JRE). And the final bundle is what is known as the Image, which can then be used to run the container (with application running inside it)
+
+Docker engine can build images by reading instructions from a text file named "Dockerfile". This file contains all the commands that are required to assemble an image. More details about Dockerfile constructs and how to write a Dockerfile can be found here and some of the best practices here
+
+
+--------------------------------------------------------------------------
+
+FROM registry-na.cntr.gaia.jpmkchae.net/base/rhel7
+
+RUN yum injstall java-1.8.0-openjdk -y -q && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+
+ENV JAVA_HOME="/usr/lib/jvm/jre-1.8.0-openjdk"
+
+WORKDIR /app
+
+ARG JAR_FILE
+
+COPY ${JAR_FILE} app.jar
+
+EXPOSE 8080
+
+CMD java -Dspring.profiles.activate=dev -jar app.jar
+
+
+
+
+--Docker maven plugin - sample--
+--------------------------------
+  
+<plugin>
+    <groupId>com.spotify</groupId>
+    <artifactId>dockerfile-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>default</id>
+            <goals>
+                <goal>build</goal>
+                <goal>push</goal>
+            </goals>
+        </execution>
+    </executions>
+    <configuration>
+        <skip>false</skip>
+        <!-- username/password not required here, if docker login has been done once on the machine-->
+  <username>{quay repository user name}</username>
+        <password>{quay repository password}</password>
+        <repository>registry-na.cntr.gaia.jpmchase.net/avatar/${project.artifactId}</repository>
+        <tag>${project.version}</tag>
+        <buildArgs>
+            <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
+        </buildArgs>
+    </configuration>
+</plugin>
+
+
+-------------------------------------------------
