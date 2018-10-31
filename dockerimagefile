@@ -9,7 +9,7 @@ Docker engine can build images by reading instructions from a text file named "D
 
 --------------------------------------------------------------------------
 
-FROM registry-na.cntr.gaia.jpmkchae.net/base/rhel7
+FROM registry-na.cntr.localhost.com/base/rhel7
 
 RUN yum injstall java-1.8.0-openjdk -y -q && \
     yum clean all && \
@@ -50,7 +50,7 @@ CMD java -Dspring.profiles.activate=dev -jar app.jar
         <!-- username/password not required here, if docker login has been done once on the machine-->
   <username>{quay repository user name}</username>
         <password>{quay repository password}</password>
-        <repository>registry-na.cntr.gaia.jpmchase.net/avatar/${project.artifactId}</repository>
+        <repository>registry-na.cntr.localhost.com/avatar/${project.artifactId}</repository>
         <tag>${project.version}</tag>
         <buildArgs>
             <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
