@@ -3,10 +3,10 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-   name: earning-svc-deployment
+   name: app-deployment
 
    lables:
-     app: earning-services
+     app: webapp
 
 spec:
    replicas: 1
@@ -14,19 +14,19 @@ spec:
    selector:
 
      matchlables:
-       app: earning-service
+       app: webapp
    
    template:
 
      metadata:
 
        lables:
-         app: earning-service
+         app: webapp
 
        spec:
          containers:
          
-         - name: earning-svc-container
+         - name: app-container
 	   image: rhel7
 
 	   volumemounts:
@@ -43,7 +43,7 @@ spec:
 	       cpu: "500m"
 
 	  imagePullSecrets:
-	  -  name: quayavatasecret
+	  -  name: secret
 
 	  volumes:
 	  - name: app-pid-store
@@ -65,7 +65,7 @@ Pod is the lowest unit which Kubernetes maintains for running containers. Each p
 
 Lets look closely at the example deployment sample
 ?Line 13-34 is the definition of pod. The pod has the container image location at 19, which will be pulled from the Quay repository. Since the access to Quay needs username/password, the imagePullSecrets defined at Line 30-31 are used for that during the image pull. Secrets can be create using the command
-kubectl create secret docker-registry quayavatarsecret --docker-server=https://registry-na.cntr.gaia.jpmchase.net --docker-username=<username> --docker-password=<password> --docker-email=<email-id>
+
 ?Line 23-29 specify the memory and cpu that the pod requires to run. If these are not provided then the default values are used.
 ?Line 32-34 specify the volume which is created with the pod and used by the application for writing the files. Type emptyDir denotes that this is a temporary volume and will be erased if the pod is killed.
 ?Line 15 defines a label for the pod which is used later to locate the pod and can be used in the Kubernetes Service. A service is a Kubernetes Object which is used to expose the pod to other pods in cluster or expose to outside the cluster.
