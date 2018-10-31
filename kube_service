@@ -1,0 +1,55 @@
+Sample Service config
+kind: Service
+apiVersion: v1
+metadata:
+ name: earning-service-svc
+spec:
+ selector:
+ app: earning-service
+  ports:
+ - protocol: TCP
+    port: 80
+    targetPort: 8824
+
+
+---------------------------------------------------------------
+
+From the Kubernetes docs "A Kubernetes Service is an abstraction which defines a logical set of Pods and a policy by which to access them". This basically means that if we want to access the application deployed inside a Pod from an application deployed in another pod, a Service is created which represents that pod and is used by all the other pods to access the app. Additionally Service is also used (along with Ingress) to expose the pod outside the cluster so that it can be accessed by  apps outside the cluster and users.
+
+The configuration for creating a service is pretty straight forward. In the spec, mention the label of the pod which is being wrapped around by this service. Mention the ports that are being exposed by the pod for communication. Here the http traffic is being exposed and will be directed to port 8824 in the app. Similarly https traffic can be exposed on port 443. If there are multiple ports exposed, then the name also needs to be provided for each port. More details about how to create services can be found here.
+
+  Once the service is created, we can expose the service for access from outside the cluster by creating an Ingress
+
+
+
+---------------------------------------------------------------
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+ name: earning-service-svc-ingress
+spec:
+ rules:
+ - host: earning-service-svc.apps.k8s1.na-2c.gaia.jpmchase.net
+    http:
+ paths:
+ - backend:
+ serviceName: earning-service-svc
+          servicePort: 80
+        path: /
+tls:
+- hosts:
+ - earning-service-svc.apps.k8s1.na-2c.gaia.jpmchase.net
+
+------------------------------------------------------------------
+
+There are multiple ways in which an application wrapped in a Kubernetes service, accessed from outside the cluster. These are NodePort, loadbalancer and Ingress.
+
+NodePort: More details on how to do it can be found here. This is not recommended though for test/prod deployments and is blocked for dev as well if deploying to GTI Kubernetes cluster.
+
+LoadBalancer: This requires an external load balancer to be present. If you have one, you can refer here for more details.
+
+Ingress: An Ingress is a collection of rules that allow inbound connections to reach the cluster services. For details click here.
+
+Lets look at the sample Ingress config given here.
+•Line 10-13 defines the kubernetes service which is being exposed via this Ingress. Here the http traffic coming on DNS earning-service-svc.apps.k8s1.na-2c.gaia.jpmchase.net will be directed to the service earning-service-svc and from there to the pod.
