@@ -1,0 +1,110 @@
+
+>> vi rhel.yml 
+
+---
+
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+
+  name: rhel7-deployment
+
+spec:
+
+  selector:
+
+    matchLabels:
+
+      app: rhel7
+
+  replicas: 1
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: rhel7
+
+    spec:
+
+      containers:
+
+      - name: rhel7
+
+        image: base/lrh7
+
+        imagePullPolicy: Always
+
+        command: ["/bin/bash", "-c", "--"]
+
+        args: ["while true; do echo $(MESSAGE);sleep 60; done;"]
+
+        env:
+
+        - name: MESSAGE
+
+          value: "Hello Kubernetes!"
+
+        resources:
+
+          limits:
+
+            memory: "32Mi"
+
+            cpu: 0.5
+
+      securityContext:
+...
+
+Steps -
+
+>> kubectl create -f rhel.yml 
+
+deployment.apps "rhel7-deployment" created
+
+>> kubectl get pods
+
+NAME                             READY   STATUS           RESTARTS AGE
+rhel7-deployment-9cb4cf99b-vc5gx 0/1     CrashLoopBackOff 3        1m
+
+>> kubectl logs rhel7-deployment-9cb4cf99b-vc5gx
+
+Hello Kubernetes!
+
+
+Running the same logs command multiple times, will show: 
+
+Hello Kubernetes!
+Hello Kubernetes!
+Hello Kubernetes!
+
+That is because the yml was defined to execute the command in a loop. And that is to keep the container alive (to prevent the CrashLoopBackOff and restarting of the container).
+
+Some other useful commands:
+
+
+kubectl describe pod rhel7-deployment-9cb4cf99b-vc5gx
+
+  
+
+Will give all the details about the pod.
+
+  
+
+kubectl delete deployment rhel7-deployment
+
+Will delete the deployment
+
+  
+
+kubectl delete pod rhel7-deployment-9cb4cf99b-vc5gx
+
+Will delete the pod
+
+
+
+
