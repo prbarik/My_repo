@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+   name: earning-svc-deployment
+
+   lables:
+     app: earning-services
+
+spec:
+   replicas: 1
+
+   selector:
+
+     matchlables:
+       app: earning-service
+   
+   template:
+
+     metadata:
+
+       lables:
+         app: earning-service
+
+       spec:
+         containers:
+         
+         - name: earning-svc-container
+	   image: rhel7
+
+	   volumemounts:
+	     - mountpath: /app/pids
+	       name: app-pid-store
+	    
+	   resources:
+	     requests:
+	       memory: "4Gi"
+	       cpu: "500m"
+	    
+	     limits:
+	       memory: "4Gi"
+	       cpu: "500m"
+
+	  imagePullSecrets:
+	  -  name: quayavatasecret
+
+	  volumes:
+	  - name: app-pid-store
+	    emptyDir: {}
+
+
+
+
+----------------------------------------------------------------------------------------
+
+
+Once you have installed the kubectl, you are all set to connect with a Kubernetes cluster, which could be local single node MiniKube cluster running on your local machine, or it could be the shared cluster like the GTI provided kubernetes cluster. Before proceeding further, we assume that you are aware about the basic Kubernetes concepts. If not then now is the good time to refer this, especially kubernetes-objects, as these form the very base of whatever kubernetes can do.
+
+ 
+
+Equipped with basics of Kubernetes, lets look at how the docker containers work with Kubernetes and how we can deploy them on a Kubernetes cluster.
+
+Pod is the lowest unit which Kubernetes maintains for running containers. Each pod can have one or more running containers inside it. However for High Availability of the application running in containers, it is highly recommended to create Deployment, which provides a way of releasing related functionality together and also takes care of monitoring the state of the Pod and running a new copy of the pod in case an existing one dies or is killed for any reason (this is done by the ReplicationController)
+
+Lets look closely at the example deployment sample
+?Line 13-34 is the definition of pod. The pod has the container image location at 19, which will be pulled from the Quay repository. Since the access to Quay needs username/password, the imagePullSecrets defined at Line 30-31 are used for that during the image pull. Secrets can be create using the command
+kubectl create secret docker-registry quayavatarsecret --docker-server=https://registry-na.cntr.gaia.jpmchase.net --docker-username=<username> --docker-password=<password> --docker-email=<email-id>
+?Line 23-29 specify the memory and cpu that the pod requires to run. If these are not provided then the default values are used.
+?Line 32-34 specify the volume which is created with the pod and used by the application for writing the files. Type emptyDir denotes that this is a temporary volume and will be erased if the pod is killed.
+?Line 15 defines a label for the pod which is used later to locate the pod and can be used in the Kubernetes Service. A service is a Kubernetes Object which is used to expose the pod to other pods in cluster or expose to outside the cluster.
+?Line 8 defines how many instances of the pod will be run. The replicationController keeps monitoring the desired state, which is running 1 instance of pod in this case, against the actual state of the pod. If the pod dies then actual state becomes different from the desired state. In this case replicationController will automatically start the pod on same/different node.
+
+Once we have the app deployed in the cluster, its time now to create a Service for the pod, so that it can be accessed reliably by other pods.
