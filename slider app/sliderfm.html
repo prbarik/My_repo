@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html ng-app="plunker">
+
+  <head>
+    <meta charset="utf-8" />
+    <title>AngularJS Plunker</title>
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <link rel="stylesheet" href="rzsliderstyle.css" />
+    <script data-require="angular.js@1.2.x" src="http://code.angularjs.org/1.2.4/angular.js" data-semver="1.2.4"></script>
+    <script src="appsl.js"></script>
+    <script src="rzslider.js"></script>
+  </head>
+
+  <body ng-controller="MainCtrl">
+    <br/>
+    <br/>
+    <br/>
+    <rzslider rz-slider-model="slider.minValue"
+          rz-slider-high="slider.maxValue"
+          rz-slider-options="slider.options"></rzslider>
+  </body>
+
+</html>
